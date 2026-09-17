@@ -45,7 +45,8 @@ def setup_logging(
     """
 
     log_dir = Path(log_dir)
-    log_dir.mkdir(parents=True, exist_ok=True)
+    if file:
+        log_dir.mkdir(parents=True, exist_ok=True)
 
     # IMPORTANT: use ROOT logger, not named logger
     logger = logging.getLogger()
