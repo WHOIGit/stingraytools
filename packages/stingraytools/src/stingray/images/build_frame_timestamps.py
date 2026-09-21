@@ -532,7 +532,7 @@ def main(argv=None):
         )
         video_df = prepare_details_video_list(detail_df)
         df_out = detail_df[detail_df["status"] == "ok"].copy()
-        mode_name = "details"
+        mode_suffix = "_detailed"
     else:
         df = build_base_dataframe(
             media_dir=media_dir,
@@ -547,7 +547,7 @@ def main(argv=None):
         df = assign_media_metadata_fast(df, args.max_workers)
         video_df = prepare_fast_video_list(df)
         df_out = expand_frames(video_df[video_df["status"] == "valid"])
-        mode_name = "fast"
+        mode_suffix = ""
 
     if video_df.empty:
         log(f"No media inventory generated for {cruise}")
@@ -565,8 +565,8 @@ def main(argv=None):
     else:
         datestr = cruise
 
-    video_list_file = f"{out_dir}/{datestr}_{cruise}_video_list_{mode_name}.csv"
-    frame_list_file = f"{out_dir}/{datestr}_{cruise}_frame_list_{mode_name}.csv"
+    video_list_file = f"{out_dir}/{datestr}_{cruise}_video_list{mode_suffix}.csv"
+    frame_list_file = f"{out_dir}/{datestr}_{cruise}_frame_list{mode_suffix}.csv"
     video_df.to_csv(video_list_file, index=False)
     df_out.to_csv(frame_list_file, index=False)
     log(f"Saved video list: {video_list_file}")

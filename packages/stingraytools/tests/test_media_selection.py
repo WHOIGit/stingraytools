@@ -6,8 +6,8 @@ from stingray.images import resolve_frame_list_csv
 
 
 def test_resolve_frame_list_ignores_video_list(tmp_path):
-    video_list = tmp_path / "20240101_EN001_video_list_fast.csv"
-    frame_list = tmp_path / "20240101_EN001_frame_list_fast.csv"
+    video_list = tmp_path / "20240101_EN001_video_list.csv"
+    frame_list = tmp_path / "20240101_EN001_frame_list.csv"
     video_list.touch()
     frame_list.touch()
 
@@ -22,7 +22,7 @@ def test_resolve_frame_list_accepts_exact_csv(tmp_path):
 
 
 def test_resolve_frame_list_rejects_ambiguous_directory(tmp_path):
-    (tmp_path / "20240101_EN001_frame_list_fast.csv").touch()
+    (tmp_path / "20240101_EN001_frame_list.csv").touch()
     (tmp_path / "20240101_EN001_frame_list_details.csv").touch()
 
     with pytest.raises(ValueError, match="Pass the exact CSV path"):
