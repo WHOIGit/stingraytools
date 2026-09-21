@@ -21,6 +21,7 @@ SLURM_CPUS = int(os.getenv("SLURM_CPUS_PER_TASK", os.cpu_count() or 1))
 DEFAULT_MAX_WORKERS = max(1, min(8, SLURM_CPUS - 1 if SLURM_CPUS > 1 else 1))
 DEFAULT_SUFFIXES = {".avi", ".mp4", ".png", ".tiff"}
 FAST_SAMPLE_COUNT = 5
+DEFAULT_TIMESTAMP_FORMAT = "%Y%m%dT%H%M%S.%f"
 # Prevent thread oversubscription inside OpenCV / BLAS
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
@@ -48,14 +49,19 @@ def list_files(directory):
             elif entry.is_dir():
                 file_list.extend(list_files(entry.path))
     return file_list
-def parse_media_time(media_name):
-    try:
-        return datetime.strptime(
-            media_name.split("-")[-1].rstrip("Z"),
-            "%Y%m%dT%H%M%S.%f",
-        )
-    except ValueError:
-        return pd.NaT
+def parse_media_time(media_name, timestamp_format=DEFAULT_TIMESTAMP_FORMAT):
+    media_stem = Path(media_name).stem
+    parts = media_stem.split("-")
+    candidates = ["-".join(parts[index:]) for index in range(len(parts))]
+    for candidate in candidates:
+        for value in (candidate, candidate.rstrip("Z")):
+            try:
+                return datetime.strptime(value, timestamp_format)
+            except ValueError:
+                continue
+    return pd.NaT
+
+
 def get_file_size(file_path):
     try:
         return (file_path, os.stat(file_path).st_size)
@@ -118,7 +124,13 @@ def fps_values_agree(values):
     return len(rounded) == 1
 
 
-def build_base_dataframe(media_dir, max_workers, suffixes=None, file_limit=None):
+def build_base_dataframe(
+    media_dir,
+    max_workers,
+    suffixes=None,
+    file_limit=None,
+    timestamp_format=DEFAULT_TIMESTAMP_FORMAT,
+):
     file_paths = list_files(media_dir)
     allowed = normalize_suffixes(suffixes) if suffixes else DEFAULT_SUFFIXES
     file_paths = [f for f in file_paths if Path(f).suffix.lower() in allowed]
@@ -144,7 +156,9 @@ def build_base_dataframe(media_dir, max_workers, suffixes=None, file_limit=None)
     df = pd.DataFrame(file_list_with_sizes, columns=["media_path", "media_size"])
     df["media"] = df["media_path"].apply(lambda x: Path(x).stem)
     df["suffix"] = df["media_path"].apply(lambda x: Path(x).suffix.lower())
-    df["media_time"] = df["media"].apply(parse_media_time)
+    df["media_time"] = df["media"].apply(
+        lambda media_name: parse_media_time(media_name, timestamp_format)
+    )
     return df
 
 
@@ -360,9 +374,9 @@ def expand_frames(df):
     )
     df["times"] = df["media_time"] + pd.to_timedelta(elapsed_seconds, unit="s")
     return df
-def process_media_details(file_path):
+def process_media_details(file_path, timestamp_format=DEFAULT_TIMESTAMP_FORMAT):
     media_name = Path(file_path).stem
-    base_time = parse_media_time(media_name)
+    base_time = parse_media_time(media_name, timestamp_format)
     suffix = Path(file_path).suffix.lower()
     try:
         media_size = os.stat(file_path).st_size
@@ -443,7 +457,13 @@ def process_media_details(file_path):
             "status": "empty",
         })
     return records
-def extract_details_dataframe(media_dir, max_workers, suffixes=None, file_limit=None):
+def extract_details_dataframe(
+    media_dir,
+    max_workers,
+    suffixes=None,
+    file_limit=None,
+    timestamp_format=DEFAULT_TIMESTAMP_FORMAT,
+):
     file_paths = list_files(media_dir)
     allowed = normalize_suffixes(suffixes) if suffixes else DEFAULT_SUFFIXES
     file_paths = [f for f in file_paths if Path(f).suffix.lower() in allowed]
@@ -462,7 +482,11 @@ def extract_details_dataframe(media_dir, max_workers, suffixes=None, file_limit=
     all_records = []
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         for records in tqdm(
-            executor.map(process_media_details, file_paths),
+            executor.map(
+                process_media_details,
+                file_paths,
+                [timestamp_format] * len(file_paths),
+            ),
             total=len(file_paths),
             desc="Details extraction",
         ):
@@ -489,6 +513,11 @@ def main(argv=None):
     parser.add_argument("--max-workers", type=int, default=DEFAULT_MAX_WORKERS)
     parser.add_argument("--file-limit", type=int, default=None)
     parser.add_argument("--suffix", nargs="+", default=None)
+    parser.add_argument(
+        "--timestamp-format",
+        default=DEFAULT_TIMESTAMP_FORMAT,
+        help="strftime format used to parse timestamps from media filenames.",
+    )
     parser.add_argument("--details", action="store_true")
     parser.add_argument(
         "--work-dir",
@@ -529,6 +558,7 @@ def main(argv=None):
             max_workers=args.max_workers,
             suffixes=args.suffix,
             file_limit=args.file_limit,
+            timestamp_format=args.timestamp_format,
         )
         video_df = prepare_details_video_list(detail_df)
         df_out = detail_df[detail_df["status"] == "ok"].copy()
@@ -539,6 +569,7 @@ def main(argv=None):
             max_workers=args.max_workers,
             suffixes=args.suffix,
             file_limit=args.file_limit,
+            timestamp_format=args.timestamp_format,
         )
         if df.empty:
             log(f"No files found in {media_dir}")
