@@ -20,7 +20,7 @@ def resolve_frame_list_csv(
         for path in source_path.iterdir()
         if path.is_file()
         and cruise in path.name
-        and "_frame_list_" in path.name
+        and ("_frame_list_" in path.name or path.name.endswith("_frame_list.csv"))
         and path.suffix.lower() == ".csv"
     )
     if len(matches) > 1:
