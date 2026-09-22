@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use StingrayTools, please cite it using this file."
+title: "StingrayTools"
+type: software
+version: "3.1.0"
+authors:
+  - family-names: Pham
+    given-names: Anh H.
+repository-code: "https://github.com/WHOIGit/stingraytools"
+license: MIT
+keywords:
+  - NES-LTER
+  - oceanography
+  - sensor processing
+  - image processing
+  - CTD

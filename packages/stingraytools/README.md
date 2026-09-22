@@ -9,32 +9,32 @@ Install the sensor-processing dependencies. This also supports image abundance,
 which reuses the sensor gridding and Poisson confidence-interval tools:
 
 ```bash
-pip install "stingraytools[sensors] @ git+https://github.com/anhph95/stingraytools.git"
+ pip install "stingraytools[sensors] @ git+https://github.com/WHOIGit/stingraytools.git"
 ```
 
 Install the image-metadata and training-data dependencies. Use this for frame
 timestamp/media CSV generation and YOLO training-data preparation:
 
 ```bash
-pip install "stingraytools[images] @ git+https://github.com/anhph95/stingraytools.git"
+ pip install "stingraytools[images] @ git+https://github.com/WHOIGit/stingraytools.git"
 ```
 
 Install the CTD compilation dependency set:
 
 ```bash
-pip install "stingraytools[ctd] @ git+https://github.com/anhph95/stingraytools.git"
+ pip install "stingraytools[ctd] @ git+https://github.com/WHOIGit/stingraytools.git"
 ```
 
 Install the abundance dependency set:
 
 ```bash
-pip install "stingraytools[abundance] @ git+https://github.com/anhph95/stingraytools.git"
+ pip install "stingraytools[abundance] @ git+https://github.com/WHOIGit/stingraytools.git"
 ```
 
 Install the complete Stingray CLI dependency set:
 
 ```bash
-pip install "stingraytools[pipeline] @ git+https://github.com/anhph95/stingraytools.git"
+ pip install "stingraytools[pipeline] @ git+https://github.com/WHOIGit/stingraytools.git"
 ```
 
 Confirm that the command-line interface is available:
@@ -72,7 +72,7 @@ stingray_workspace/
 
 The processing commands write dashboard-ready products, but do not include or
 serve a visualization application. The separate
-[stingray-dashboard](https://github.com/anhph95/stingray-dashboard) repository
+ [stingray-dashboard](https://github.com/WHOIGit/stingray-dashboard) repository
 consumes these products.
 
 ## Example: shipboard processing
@@ -85,7 +85,7 @@ python3 -m venv ~/venv/stingray
 source ~/venv/stingray/bin/activate
 
 # Install only the sensor-processing dependencies for this job.
-pip install "stingraytools[sensors] @ git+https://github.com/anhph95/stingraytools.git"
+ pip install "stingraytools[sensors] @ git+https://github.com/WHOIGit/stingraytools.git"
 
 # Mount the network share using the method appropriate for the host system.
 # This example assumes the share is available at /mnt/stingray_share.
@@ -319,4 +319,4 @@ stack, so install `stingraytools[images]` for those jobs.
 
 The default merged output is written below
 `WORK_DIR/dash_data/data/stingray/`. These products can be visualized with the
-separately maintained [stingray-dashboard](https://github.com/anhph95/stingray-dashboard).
+ separately maintained [stingray-dashboard](https://github.com/WHOIGit/stingray-dashboard).

@@ -5,8 +5,6 @@ The workflows can run independently or as one data pipeline from raw
 sensor files, image metadata, ML detections, and CTD reference data to
 dashboard-ready CSV products.
 
-[![DOI](https://zenodo.org/badge/946902610.svg)](https://doi.org/10.5281/zenodo.15025961)
-
 ## Packages
 
 - [stingraytools](packages/stingraytools/README.md): sensor processing, image
@@ -51,20 +49,20 @@ that workflow.
 Install only the dependency set needed by the job:
 
 ```bash
-pip install "stingraytools[sensors] @ git+https://github.com/anhph95/stingraytools.git"
-pip install "stingraytools[images] @ git+https://github.com/anhph95/stingraytools.git"
-pip install "stingraytools[ctd] @ git+https://github.com/anhph95/stingraytools.git"
-pip install "stingraytools[abundance] @ git+https://github.com/anhph95/stingraytools.git"
+pip install "stingraytools[sensors] @ git+https://github.com/WHOIGit/stingraytools.git"
+pip install "stingraytools[images] @ git+https://github.com/WHOIGit/stingraytools.git"
+pip install "stingraytools[ctd] @ git+https://github.com/WHOIGit/stingraytools.git"
+pip install "stingraytools[abundance] @ git+https://github.com/WHOIGit/stingraytools.git"
 ```
 
 Install the full processing pipeline dependency set:
 
 ```bash
-pip install "stingraytools[pipeline] @ git+https://github.com/anhph95/stingraytools.git"
+pip install "stingraytools[pipeline] @ git+https://github.com/WHOIGit/stingraytools.git"
 ```
 
 The dashboard application is maintained in the separate
-[stingray-dashboard](https://github.com/anhph95/stingray-dashboard) repository.
+[stingray-dashboard](https://github.com/WHOIGit/stingray-dashboard) repository.
 
 ## Core Commands
 
@@ -169,3 +167,11 @@ python -m pytest packages/stingraytools/tests
 ## License
 
 StingrayTools is distributed under the MIT License. See [LICENSE](LICENSE).
+
+## Citation
+
+Please cite this software as:
+
+> Pham, Anh H. *StingrayTools*, version 3.1.0. MIT License. https://github.com/WHOIGit/stingraytools
+
+Machine-readable citation metadata is available in [CITATION.cff](CITATION.cff).

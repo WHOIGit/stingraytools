@@ -10,9 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
-    { name = "Anh Pham" },
-    { name = "Sidney Batchelder" },
-    { name = "Heidi Sosik" },
+    { name = "Anh H. Pham" },
 ]
 keywords = [
     "NES-LTER",
@@ -31,9 +29,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/anhph95/stingraytools"
-Repository = "https://github.com/anhph95/stingraytools"
-Issues = "https://github.com/anhph95/stingraytools/issues"
+Homepage = "https://github.com/WHOIGit/stingraytools"
+Repository = "https://github.com/WHOIGit/stingraytools"
+Issues = "https://github.com/WHOIGit/stingraytools/issues"
 
 [project.scripts]
 stingray = "stingray.cli.main:main"
