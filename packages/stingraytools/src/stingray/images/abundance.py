@@ -5,6 +5,7 @@ import argparse
 import logging
 import os
 import re
+import tempfile
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -165,8 +166,19 @@ def process(config: Config) -> pd.DataFrame:
             column,
         )
     ]
+    # Allow an enriched CSV to be used as the input on a later run. Any
+    # columns produced by the new abundance table are replaced below instead
+    # of being duplicated with pandas' _x/_y suffixes.
+    replace_columns = [
+        column
+        for column in df_bin.columns
+        if column != "times" and column in sensor_df.columns
+    ]
     df_merged = (
-        sensor_df.drop(columns=inherited_media_columns).merge(
+        sensor_df.drop(
+            columns=set(inherited_media_columns + replace_columns),
+            errors="ignore",
+        ).merge(
             df_bin,
             on="times",
             how="left",
@@ -177,7 +189,23 @@ def process(config: Config) -> pd.DataFrame:
 
     logger.info("Writing output: %s", config.out_csv)
     config.out_csv.parent.mkdir(parents=True, exist_ok=True)
-    df_merged.to_csv(config.out_csv, index=False)
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            suffix=".csv",
+            prefix=f".{config.out_csv.name}.",
+            dir=config.out_csv.parent,
+            delete=False,
+            newline="",
+            encoding="utf-8",
+        ) as temp_file:
+            temp_path = Path(temp_file.name)
+        df_merged.to_csv(temp_path, index=False)
+        os.replace(temp_path, config.out_csv)
+    finally:
+        if temp_path is not None and temp_path.exists():
+            temp_path.unlink()
     logger.info("Done")
 
     return df_merged
