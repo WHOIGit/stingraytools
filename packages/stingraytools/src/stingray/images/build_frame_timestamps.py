@@ -50,7 +50,18 @@ def list_files(directory):
                 file_list.extend(list_files(entry.path))
     return file_list
 def parse_media_time(media_name, timestamp_format=DEFAULT_TIMESTAMP_FORMAT):
-    media_stem = Path(media_name).stem
+    media_name = Path(media_name).name
+    if Path(media_name).suffix.lower() in {
+        ".avi",
+        ".mp4",
+        ".png",
+        ".tif",
+        ".tiff",
+        ".jpg",
+        ".jpeg",
+    }:
+        media_name = Path(media_name).stem
+    media_stem = media_name
     parts = media_stem.split("-")
     candidates = ["-".join(parts[index:]) for index in range(len(parts))]
     for candidate in candidates:
