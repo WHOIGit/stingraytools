@@ -90,6 +90,18 @@ Run the companion video and abundance workflow from its repository. Its
 abundance step reads the sensor CSV and writes the updated product to the same
 path.
 
+`stingray images abundance --detections` accepts detections from any model in
+one of these forms:
+
+- a Parquet or CSV table with `media`, `frame`, `class` (or `class_id` with
+  `--class-map-csv`) and an optional `score`; or
+- standard COCO JSON whose images are named `<media>_<frame>.png`.
+
+`frame` is the 0-based source-video frame, matching the frame list. Boxes
+without a score are manual and always counted. A COCO file counts only the
+frames it lists. Skipped rows and frames are logged and, with `--issues-csv`,
+written to a CSV.
+
 Use command help for complete options:
 
 ```bash

@@ -49,6 +49,7 @@ images = [
     "numpy>=1.26",
     "opencv-python",
     "pandas>=2.0",
+    "pyarrow>=14",
     "scipy>=1.11",
     "tqdm>=4.64",
 ]
@@ -61,6 +62,7 @@ abundance = [
     "numba>=0.59",
     "numpy>=1.26",
     "pandas>=2.0",
+    "pyarrow>=14",
     "scipy>=1.11",
 ]
 
@@ -69,6 +71,7 @@ pipeline = [
     "numpy>=1.26",
     "opencv-python",
     "pandas>=2.0",
+    "pyarrow>=14",
     "scipy>=1.11",
     "tqdm>=4.64",
 ]
@@ -84,6 +87,7 @@ dev = [
     "numpy>=1.26",
     "opencv-python",
     "pandas>=2.0",
+    "pyarrow>=14",
     "pytest>=8",
     "scipy>=1.11",
     "tqdm>=4.64",

@@ -49,7 +49,7 @@ def test_abundance_uses_canonical_detection_table(tmp_path):
 
     result = process(
         Config(
-            detections_csv=detections_csv,
+            detections=detections_csv,
             class_map_csv=class_map_csv,
             sensor_csv=sensor_csv,
             media_csv=media_csv,
@@ -104,7 +104,7 @@ def test_abundance_can_overwrite_previous_product(tmp_path):
     ).to_csv(class_map_csv, index=False)
 
     config = Config(
-        detections_csv=detections_csv,
+        detections=detections_csv,
         class_map_csv=class_map_csv,
         sensor_csv=sensor_csv,
         media_csv=media_csv,
