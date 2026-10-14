@@ -33,7 +33,7 @@ def warn(message):
 def parse_args(argv=None):
     p = argparse.ArgumentParser(
         prog="stingray images generate-training",
-        description="Prepare YOLO training data from Tator annotations.",
+        description="Prepare YOLO training data from frame_states.csv, rois.csv and class_dict.csv annotation exports.",
         epilog=(
             "Template image dimensions: --img-dim 2330 1750. "
             "For Slurm, use --no-confirm --no-date-suffix and pass an exact --out-dir."

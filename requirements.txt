@@ -11,6 +11,3 @@
 #
 # For local Stingray CLI development:
 #   pip install -e ".[dev]"
-#
-# Legacy Tator command dependency:
-#   pip install ".[legacy-tator]"
