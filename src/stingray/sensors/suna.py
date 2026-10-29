@@ -178,6 +178,17 @@ def tsp_correction(
     return out
 
 
+def _raw_nitrate(df: pd.DataFrame, nitrate_col: str, dark_col: str) -> np.ndarray:
+    """Uncalibrated nitrate as floats; unparseable values become NaN."""
+    raw = pd.to_numeric(df[nitrate_col], errors="coerce").to_numpy(dtype=float, copy=True)
+
+    if dark_col in df.columns:
+        dark = pd.to_numeric(df[dark_col], errors="coerce").to_numpy(dtype=float)
+        raw[dark == 0] = np.nan
+
+    return raw
+
+
 def calibrate_nitrate(
     df: pd.DataFrame,
     cruise: str,
@@ -200,13 +211,7 @@ def calibrate_nitrate(
 
     # Fast path: no calibration requested
     if cal_file is None and cal_dir is None:
-        raw = df[nitrate_col].to_numpy(dtype=float, copy=True)
-
-        if dark_col in df.columns:
-            dark = df[dark_col].to_numpy(dtype=float, copy=False)
-            raw[dark == 0] = np.nan
-
-        return raw
+        return _raw_nitrate(df, nitrate_col, dark_col)
 
     # Optional calibration lookup
     if cal_file is not None:
@@ -221,13 +226,7 @@ def calibrate_nitrate(
             cruise,
         )
 
-        raw = df[nitrate_col].to_numpy(dtype=float, copy=True)
-
-        if dark_col in df.columns:
-            dark = df[dark_col].to_numpy(dtype=float, copy=False)
-            raw[dark == 0] = np.nan
-
-        return raw
+        return _raw_nitrate(df, nitrate_col, dark_col)
 
     if not cal_path.exists():
         raise FileNotFoundError(f"Calibration file not found: {cal_path}")
