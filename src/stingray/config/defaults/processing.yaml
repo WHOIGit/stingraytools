@@ -1,0 +1,12 @@
+# Processing parameters that are tuned per platform or deployment style.
+#
+# Cast/profile segmentation from the CTD depth series (identify_profiles).
+profiles:
+  bin_size: 1.0               # depth quantization (m)
+  smooth_window: 7            # median smoothing window (samples)
+  dir_window: 4               # samples used to estimate direction
+  max_gap_sec: 1200.0         # time gap that forces a new profile (20 minutes)
+  min_samples: 5              # minimum unique depth bins in a profile
+  surface_start_threshold: 20.0   # a profile must reach this depth or shallower (m)
+  min_turn_depth: 5.0         # minimum depth change to count as a turn (m)
+  min_turn_time: 30.0         # minimum time between turns (s)

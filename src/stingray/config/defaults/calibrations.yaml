@@ -1,0 +1,50 @@
+# Sensor calibration coefficients.
+#
+# Each sensor lists dated entries. A cruise uses the entry with the latest
+# `valid_from` on or before its start date, or an entry chosen by `name`
+# (`--cal-year NAME`). A date before the first entry uses the first entry (with
+# a warning). With neither a date nor a name, `default` is used when set.
+#
+# Add a new calibration as another entry; no code change is needed.
+# Equations (in code):
+#   chlorophyll, backscattering:  scale_factor * (raw - dark_count)
+#   par:                          Im * 10 ** ((raw - a0) / a1)
+# Units come from units.yaml.
+
+chlorophyll:
+  default: "2021"
+  entries:
+    - name: "2019"
+      valid_from: 1900-01-01
+      scale_factor: 0.0073
+      dark_count: 48
+    - name: "2021"
+      valid_from: 2021-08-19
+      scale_factor: 0.0073
+      dark_count: 51
+
+backscattering:
+  default: "2021"
+  entries:
+    - name: "2019"
+      valid_from: 1900-01-01
+      scale_factor: 1.684e-06
+      dark_count: 48
+    - name: "2021"
+      valid_from: 2021-08-19
+      scale_factor: 1.861e-06
+      dark_count: 46
+
+par:
+  default: "2021"
+  entries:
+    - name: "2019"
+      valid_from: 1900-01-01
+      a0: 0.983748497
+      a1: 0.8129573432
+      Im: 1.3589
+    - name: "2021"
+      valid_from: 2021-08-19
+      a0: 0.942280491
+      a1: 0.8215386
+      Im: 1.3589

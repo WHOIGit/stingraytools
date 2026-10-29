@@ -54,9 +54,14 @@ stingray sensors merge \
   --cruise CRUISE_ID \
   --start START_DATE \
   --end END_DATE \
-  --cal-year CALIBRATION_YEAR \
   --time-bin-seconds BIN_WIDTH_SECONDS
 ```
+
+`--start`/`--end` may be omitted: dates are then looked up from the
+NES-LTER API. `--cal-year` is optional (see Configuration). `--cruise` accepts several names or `all`. Other options:
+`--dry-run` (list files in range only), `--format parquet`, `--bin-counts`
+(per-sensor `<sensor>_n` columns), and `--no-file-log`. `stingray --version`
+prints the installed version.
 
 Build camera frame timestamps:
 
@@ -68,15 +73,31 @@ stingray images frame-timestamp \
   --out-dir /path/to/stingray/data/media_list/CAMERA_STREAM
 ```
 
-Attach camera metadata to a cruise CSV:
+`frame-timestamp` caches probed media (path, size, modification time) under
+`WORK_DIR/indexes`, so reruns only probe new or changed files. Use `--no-cache`
+to disable it, `--verify-samples N` to probe more files per group (this also
+ignores the cache), and `--header-count` to use container frame counts when a
+group has to be measured file by file.
+
+Add one camera stream's frame information to a cruise CSV. The stream name is
+only a label and the frame list is an exact file; nothing is searched for:
 
 ```bash
 stingray images add-media \
-  /path/to/stingray/data/dashboard_data/data/DATASET/CRUISE.csv \
-  --work-dir /path/to/stingray/data \
-  --cruise CRUISE_ID \
-  --media-list-dirs /path/to/stingray/data/media_list/CAMERA_STREAM
+  /path/to/CRUISE.csv \
+  --media-stream CAMERA_NAME \
+  --media-list /path/to/frame_list.csv
 ```
+
+Each sensor row stores the first frame of its time bin in `media_<stream>` and
+`frame_<stream>` (no links, which the frame viewer builds). One stream per call;
+other streams' columns are never touched. Re-running needs `--overwrite` once
+those columns exist. `abundance` follows the same rule for its own columns and
+never modifies the media/frame columns. All steps write the one cruise CSV atomically.
+
+`add-media` and `abundance` place frames with the same binning rule: a bin starts at its sensor
+timestamp and spans the bin width. `--bin-width` is optional for `add-media`
+and is inferred from the sensor CSV when omitted.
 
 Download CTD reference data:
 
@@ -84,6 +105,13 @@ Download CTD reference data:
 stingray ctd download \
   --work-dir /path/to/stingray/data \
   --skip-existing
+```
+
+Concatenate Sea-Bird `.cnv` casts into one CSV with standardized `times`,
+`latitude`, and `longitude`:
+
+```bash
+stingray ctd concat /path/to/cnv_dir --output /path/to/YYYYMMDD_CTD.csv
 ```
 
 Run the companion video and abundance workflow from its repository. Its
@@ -110,13 +138,33 @@ stingray sensors --help
 stingray images --help
 ```
 
+## Configuration
+
+Values that change with instruments or platforms live in YAML files bundled in
+`src/stingray/config/defaults/`:
+
+| File | Contents |
+|---|---|
+| `calibrations.yaml` | Dated calibration entries per sensor (chlorophyll, backscattering, PAR) |
+| `units.yaml` | Display unit of each output column |
+| `columns.yaml` | Raw/merged column name to output column name |
+| `processing.yaml` | Cast/profile segmentation parameters |
+
+A cruise uses the calibration entry in force on its start date, or the entry
+named by `--cal-year`. To change values, copy a file into your own folder and
+pass `--config-dir` (or set `STINGRAY_CONFIG_DIR`). An override only needs the
+entries it changes; anything it leaves out falls back to the bundled default,
+and a missing or unreadable file is reported and ignored. A calibration list
+replaces the sensor's whole list. The dashboard keeps its own unit and
+column-alias tables; keep them in step with `units.yaml` and `columns.yaml`.
+
 ## Development
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-python -m pytest packages/stingraytools/tests
+python -m pytest
 ```
 
 ## License and citation

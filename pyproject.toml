@@ -27,7 +27,9 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Operating System :: OS Independent",
 ]
-dependencies = []
+dependencies = [
+    "pyyaml>=6",
+]
 
 [project.urls]
 Homepage = "https://github.com/WHOIGit/stingraytools"
@@ -42,6 +44,7 @@ sensors = [
     "numba>=0.59",
     "numpy>=1.26",
     "pandas>=2.0",
+    "pyarrow>=14",
     "scipy>=1.11",
 ]
 
@@ -56,6 +59,7 @@ images = [
 ]
 
 ctd = [
+    "numpy>=1.26",
     "pandas>=2.0",
 ]
 
@@ -68,48 +72,28 @@ abundance = [
 ]
 
 pipeline = [
-    "numba>=0.59",
-    "numpy>=1.26",
-    "opencv-python",
-    "pandas>=2.0",
-    "pyarrow>=14",
-    "scipy>=1.11",
-    "tqdm>=4.64",
+    "stingraytools[images,sensors,ctd,abundance]",
 ]
 
 dev = [
+    "stingraytools[pipeline]",
     "ipykernel>=6.29",
     "jupyter>=1",
-    "numba>=0.59",
-    "numpy>=1.26",
-    "opencv-python",
-    "pandas>=2.0",
-    "pyarrow>=14",
     "pytest>=8",
-    "scipy>=1.11",
-    "tqdm>=4.64",
 ]
 
 [tool.setuptools]
 include-package-data = true
-packages = [
-    "stingray",
-    "stingray.cli",
-    "stingray.config",
-    "stingray.ctd",
-    "stingray.images",
-    "stingray.io",
-    "stingray.logging",
-    "stingray.profiles",
-    "stingray.sensors",
-    "stingray.stats",
-    "stingray.utils",
-]
 
 [tool.setuptools.package-dir]
-stingray = "packages/stingraytools/src/stingray"
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["stingray*"]
 
 [tool.setuptools.package-data]
 stingray = [
     "data_reference/*",
+    "config/defaults/*.yaml",
 ]
