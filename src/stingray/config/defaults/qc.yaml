@@ -1,0 +1,49 @@
+# First-pass quality control, applied to each raw sensor stream before any
+# calibration, binning or merging. Values that fail a rule are set to NaN (not
+# replaced); the count per column is logged.
+#
+# One section per sensor stream, named as in the raw data folders. Each column
+# lists any of:
+#   min / max : values below / above are invalid (a value equal to a limit is kept)
+#   invalid   : exact values that mean "no measurement" or a saturated reading
+#               (matched to within 0.001)
+#
+# Limits are fixed, physically based bounds: instrument output range, or values
+# that cannot occur in the survey area. They are deliberately loose so they only
+# reject impossible values, never extreme-but-real ones. Smaller spikes that stay
+# inside these limits are handled by median binning.
+#
+# Add or change a rule here, or override this file with --config-dir; no code
+# change is needed. A stream or column left out is not checked.
+
+CTD:
+  Temperature:                # deg C; glitches of thousands of degrees, or 0 with no cell reading
+    min: -2
+    max: 40
+  Salinity:                   # PSU; near-zero values occur when the cell is out of the water
+    min: 10
+  "Sound Velocity":           # m/s
+    min: 1400
+    max: 1600
+
+DVL:
+  anglePitch:                 # +-90 is a placeholder, not a measured pitch
+    invalid: [-90, 90]
+  distanceAltitude:           # 9999.99 = no bottom lock (10-20% of rows in a typical cruise)
+    invalid: [9999.99]
+
+Fluorometer:
+  Backscattering:             # counts; the reading saturates at 4130
+    invalid: [4130]
+
+Oxygen: {}
+
+GPS: {}
+
+PAR:
+  "Raw PAR [V]":              # normal output is 0-3.7 V; the channel reports ~75-80 V when faulty
+    max: 5
+
+SUNA:
+  "NitrateConcentration[uM]": # uM; the instrument reports ~2.0e6 on overflow. Small negatives are noise, so no lower limit.
+    max: 500

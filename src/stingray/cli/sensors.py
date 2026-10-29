@@ -94,6 +94,11 @@ def parse_args(argv=None) -> argparse.Namespace:
         help="List the files in range for each cruise without reading or writing data.",
     )
     parser.add_argument(
+        "--no-qc",
+        action="store_true",
+        help="Skip the first-pass QC of raw sensor values (rules in config/defaults/qc.yaml).",
+    )
+    parser.add_argument(
         "--no-file-log",
         action="store_true",
         help="Disable Stingray log files and write logs only to the console.",
@@ -183,6 +188,7 @@ def main(argv=None) -> None:
                 output_format=args.output_format,
                 bin_counts=args.bin_counts,
                 dry_run=args.dry_run,
+                qc=not args.no_qc,
             )
         except Exception:
             if len(cruises) == 1:

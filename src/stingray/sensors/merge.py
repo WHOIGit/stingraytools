@@ -17,6 +17,7 @@ from stingray.utils.spatial import convert_gps
 from stingray.sensors.ctd import density_ies80
 from stingray.sensors.fluorometer import calibrate_chlorophyll, calibrate_backscatter
 from stingray.sensors.par import calibrate_par
+from stingray.sensors.qc import apply_qc
 from stingray.sensors.suna import calibrate_nitrate
 from stingray.profiles.identify import identify_profiles
 
@@ -114,6 +115,7 @@ def merge_sensors(
     output_format: str = "csv",
     bin_counts: bool = False,
     dry_run: bool = False,
+    qc: bool = True,
 ) -> Path | None:
     # Logging the function entry and parameters for better traceability.
     logger.info(
@@ -162,7 +164,9 @@ def merge_sensors(
         if dry_run:
             logger.info("[dry-run] %s: %s files in range", name, len(files))
             continue
-        sensors[name.lower()] = read_csv_parallel(files)
+        df = read_csv_parallel(files)
+        # First QC, per sensor stream and before any calibration.
+        sensors[name.lower()] = apply_qc(df, name) if qc else df
 
         logger.info(
             "%s: %s files, %s rows",
