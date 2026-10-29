@@ -332,6 +332,10 @@ def merge_sensors(
                 cal_dir=suna_cal_dir,
             )
 
+        # Second QC, on the calibrated nitrate (the TSP correction can go far negative).
+        if qc:
+            suna = apply_qc(suna, "SUNA_calibrated")
+
     suna_agg = aggregate_bins(suna, SUNA_AGG, "suna_n" if bin_counts else None)
 
     logger.info("SUNA bins: %s", len(suna_agg))

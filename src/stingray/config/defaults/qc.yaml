@@ -13,6 +13,10 @@
 # reject impossible values, never extreme-but-real ones. Smaller spikes that stay
 # inside these limits are handled by median binning.
 #
+# Streams are checked on the raw readings, before calibration. A section named
+# <stream>_calibrated is a second check on the calibrated column (SUNA_calibrated
+# is applied after the nitrate calibration).
+#
 # Add or change a rule here, or override this file with --config-dir; no code
 # change is needed. A stream or column left out is not checked.
 
@@ -45,5 +49,10 @@ PAR:
     max: 5
 
 SUNA:
-  "NitrateConcentration[uM]": # uM; the instrument reports ~2.0e6 on overflow. Small negatives are noise, so no lower limit.
+  "NitrateConcentration[uM]": # uM; the instrument reports ~2.0e6 on overflow. Raw readings are not negative.
+    max: 500
+
+SUNA_calibrated:
+  "NitrateConcentration[uM]": # uM; nitrate cannot be negative, small negatives are within instrument noise,
+    min: -10                  # and a failed correction can reach about -80
     max: 500
