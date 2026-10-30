@@ -15,7 +15,7 @@ DistanceMethod = Literal["haversine", "geodesic"]
 
 
 class StationLocator:
-    DEFAULT_STATION_REF_URL = "https://nes-lter-api.whoi.edu/api/stations/file"
+    DEFAULT_STATION_REF_URL = "https://nes-lter-api.whoi.edu/api/stations/file.csv"
 
     REQUIRED_COLUMNS = [
         "station",
